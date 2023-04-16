@@ -1,0 +1,24 @@
+# Usual dependencies:
+celery==5.2.7
+redis==4.5.4
+Django==4.2
+django-filter==23.1
+django-storages==1.13.2
+djangorestframework==3.14
+requests==2.28.2
+python-dotenv==1.0.0
+psycopg2-binary==2.9.6
+PyJWT==2.6.0
+
+# Tests Specific:
+coverage==7.2.3
+pytest-factoryboy==2.5.1
+requests-mock==1.10.0
+pytest-mock==3.10.0
+responses==0.23.1
+pylint==2.17.2
+pylint-django==2.5.3
+pylint-plugin-utils==0.7
+black==23.3.0
+drf-tweaks==0.9.7
+pytest-django==4.5.2

@@ -1,0 +1,28 @@
+# directories
+notes
+document_files
+coverage_html_report
+apib_debug
+
+# environment variables
+.env_local_dev
+
+# IDEs
+.idea
+.DS_Store
+.directory
+.coverage
+
+# Virtual environments
+venv/
+
+# Python
+*.py[cod]
+*.pyc
+__pycache__
+
+# makefiles
+Makefile
+
+# Celery
+celerybeat-schedule
