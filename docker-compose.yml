@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=applifting
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  redis:
+    image: redis:alpine
+    expose:
+      - 6379
+    depends_on:
+      - db
+  django:
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/applifting
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_NAME=postgres
+      - DATABASE_USER_NAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=db
+      - AUTH_SERVICE_URL=https://python.exercise.applifting.cz/api/v1/auth
+      - OFFER_SERVICE_URL=https://python.exercise.applifting.cz/api/v1
+      - SIGN_UP_TOKEN=sign_up_token
+      - DEBUG=True
+      - SECRET_KEY=secret_key
+    depends_on:
+      - db
+      - redis
+  celery-worker-with-beat:
+    build: .
+    command: celery -A applifting worker -l info -B
+    volumes:
+      - .:/applifting
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - DATABASE_NAME=postgres
+      - DATABASE_USER_NAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=db
+      - AUTH_SERVICE_URL=https://python.exercise.applifting.cz/api/v1/auth
+      - OFFER_SERVICE_URL=https://python.exercise.applifting.cz/api/v1
+      - SIGN_UP_TOKEN=sign_up_token
+      - DEBUG=True
+      - SECRET_KEY=secret_key
+    depends_on:
+      - redis
+      - db
