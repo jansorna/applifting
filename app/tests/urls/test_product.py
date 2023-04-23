@@ -21,7 +21,16 @@ class TestProduct:
         assert response.status_code == 200
         assert len(response.json().get("results")) == 5
         for product_data in response.json().get("results"):
-            assert set(product_data.keys()) == {"created_date", "description", "id", "name", "updated_date"}
+            assert set(product_data.keys()) == {"created_date", "description", "id", "name", "updated_date", "offers"}
+            for offers_data in product_data.get("offers"):
+                assert set(offers_data.keys()) == {
+                    "active",
+                    "created_date",
+                    "id",
+                    "items_in_stock",
+                    "price",
+                    "updated_date",
+                }
 
     def test_detail(self, api_client, product_factory, offer_factory):
         product = product_factory()
@@ -38,13 +47,12 @@ class TestProduct:
                 "id",
                 "items_in_stock",
                 "price",
-                "product",
                 "updated_date",
             }
 
     def test_post(self, api_client, mocked_service_auth, mocked_product_register, mocker):
         # mocking offer response
-        response_mock = mocker.patch("app.models.service_request_get")
+        response_mock = mocker.patch("app.helpers.applifting_api.AppLiftingAPI.service_request_get")
         response_mock.return_value = MockResponse(self.mocked_offer_response, 200)
 
         data = {

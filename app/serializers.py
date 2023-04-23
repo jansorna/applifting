@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from app.helpers.applifting_api import product_api
 from app.models import Product, Offer
 
 
@@ -9,39 +10,28 @@ class OfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
         fields = "__all__"
-        read_only_field = ("id", "price", "items_in_stock")
+
+
+class OfferForProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offer
+        exclude = ("product",)
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    offers = OfferForProductSerializer(many=True, read_only=True)
+
     class Meta:
         model = Product
         fields = "__all__"
-        read_only_field = ("id",)
+        read_only_field = ("id", "created_date", "updated_date")
 
     @transaction.atomic()
     def create(self, validated_data):
         instance = super().create(validated_data)
-        instance.register_product_in_offer_service()
-        instance.create_offers_for_product()
+        product_api.register_product(instance)
+        product_api.sync_products_offers([instance])
         return instance
-
-
-class OfferDetailSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
-
-    class Meta:
-        model = Offer
-        fields = ("id", "price", "items_in_stock", "product", "created_date", "updated_date")
-        read_only_field = ("id", "price", "items_in_stock", "product", "created_date", "updated_field")
-
-
-class ProductDetailSerializer(serializers.ModelSerializer):
-    offers = OfferSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Product
-        fields = ("id", "name", "description", "offers", "created_date", "updated_date")
-        read_only_field = ("id",)
 
 
 class DatetimePeriodSerializer(serializers.Serializer):

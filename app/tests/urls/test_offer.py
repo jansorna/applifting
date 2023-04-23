@@ -37,13 +37,7 @@ class TestOffer:
             "price",
             "product",
             "updated_date",
-        }
-        assert set(response.json().get("product").keys()) == {
-            "created_date",
-            "description",
-            "id",
-            "name",
-            "updated_date",
+            "active",
         }
 
     def test_price_history(self, api_client, product_factory, offer_factory, price_change_factory):

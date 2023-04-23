@@ -21,6 +21,10 @@ in the `.env_local_dev` are correct.
 
 7. Start Celery beat `celery -A applifting beat -l info` which pushes update task every minute into queue
 
+8. All endpoints are documented and described in `applifting.html` file
+
+9. Docker file and docker-compose.yml file can be used for local testing
+
 
 ## Authentication
 - Whole app is accessible without authentication
@@ -34,6 +38,7 @@ in the `.env_local_dev` are correct.
 ## Development
 - Run `test.sh` before pushing - runs pylint, black, coverage and pytest
 
+
 ## Point for improvement
 - more tests
-- documentation of endpoints
+- deployment on Heroku

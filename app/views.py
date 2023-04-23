@@ -6,9 +6,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from app.models import Product, Offer
 from app.serializers import (
-    ProductDetailSerializer,
     ProductSerializer,
-    OfferDetailSerializer,
     OfferSerializer,
     DatetimePeriodSerializer,
 )
@@ -17,12 +15,7 @@ from app.serializers import (
 class ProductViewSet(ModelViewSet):
     lookup_field = "id"
     permission_classes = (AllowAny | IsAuthenticated,)
-
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return ProductDetailSerializer
-        else:
-            return ProductSerializer
+    serializer_class = ProductSerializer
 
     def get_queryset(self):
         if self.action == "retrieve":
@@ -36,9 +29,7 @@ class OfferViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     permission_classes = (AllowAny | IsAuthenticated,)
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
-            return OfferDetailSerializer
-        elif self.action == "price_history":
+        if self.action == "price_history":
             return DatetimePeriodSerializer
         else:
             return OfferSerializer

@@ -9,8 +9,6 @@ load_dotenv(verbose=True, dotenv_path=os.path.join(BASE_DIR, ".env_local_dev"))
 DEBUG = bool(os.getenv("DEBUG", "False"))
 SECRET_KEY = os.getenv("SECRET_KEY", "secret_key_from_env_file")
 
-SERVICE_TOKEN = None
-
 ALLOWED_HOSTS = ["*"]
 
 # Application definition

@@ -18,7 +18,7 @@ class TestTask:
         self, api_client, mocked_service_auth, product_factory, offer_factory, price_change_factory, mocker
     ):
         # mocking offer response
-        response_mock = mocker.patch("applifting.tasks.service_request_get")
+        response_mock = mocker.patch("app.helpers.applifting_api.AppLiftingAPI.service_request_get")
         response_mock.return_value = MockResponse(self.mocked_offer_response, 200)
         product = product_factory()
         offer_1 = offer_factory(product=product, id="404f6aad-89a3-9397-4947-3ffb01b57ddd")
