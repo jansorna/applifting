@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
+from app.enums import TrendType
 from app.models import Product, Offer
 from app.serializers import (
     ProductSerializer,
@@ -57,11 +58,11 @@ class OfferViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
             last_price_change = prices.last()
             percentage_change = last_price_change.price / first_price_change.price
             if percentage_change > 1:
-                data = {"trend": "increasing"}
+                data = {"trend": TrendType.INCREASING}
             elif percentage_change < 1:
-                data = {"trend": "decreasing"}
+                data = {"trend": TrendType.DECREASING}
             else:
-                data = {"trend": "stagnating"}
+                data = {"trend": TrendType.STAGNATING}
             data["percentage_change"] = str(round((percentage_change - 1) * 100, 2)) + "%"
             return Response(status=200, data=data)
         else:

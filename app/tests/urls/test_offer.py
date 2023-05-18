@@ -1,5 +1,9 @@
+import factory
 import pytest
+from django.db.models import signals
 from django.urls import reverse
+
+from app.enums import TrendType
 
 pytestmark = pytest.mark.django_db
 
@@ -7,6 +11,7 @@ pytestmark = pytest.mark.django_db
 class TestOffer:
     list_endpoint = reverse("offer-list")
 
+    @factory.django.mute_signals(signals.post_save)
     def test_list(self, api_client, offer_factory):
         offer_factory.create_batch(5)
         response = api_client.get(self.list_endpoint)
@@ -23,6 +28,7 @@ class TestOffer:
                 "updated_date",
             }
 
+    @factory.django.mute_signals(signals.post_save)
     def test_detail(self, api_client, product_factory, offer_factory):
         product = product_factory()
         offer = offer_factory(product=product)
@@ -40,6 +46,7 @@ class TestOffer:
             "active",
         }
 
+    @factory.django.mute_signals(signals.post_save)
     def test_price_history(self, api_client, product_factory, offer_factory, price_change_factory):
         product = product_factory()
         offer = offer_factory(product=product)
@@ -52,4 +59,4 @@ class TestOffer:
         }
         response = api_client.post(price_history_url, data=data)
         assert response.status_code == 200
-        assert response.json() == {"percentage_change": "2.0%", "trend": "increasing"}
+        assert response.json() == {"percentage_change": "2.0%", "trend": TrendType.INCREASING}

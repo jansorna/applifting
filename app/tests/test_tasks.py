@@ -1,4 +1,6 @@
+import factory
 import pytest
+from django.db.models import signals
 
 from app.models import PriceChange
 from app.tests.conftest import MockResponse
@@ -14,6 +16,7 @@ class TestTask:
         {"id": "509ac030-b5c9-d4e8-1aff-e1953a4946a4", "price": 77718, "items_in_stock": 716},
     ]
 
+    @factory.django.mute_signals(signals.post_save)
     def test_update_offers_for_products_in_db(
         self, api_client, mocked_service_auth, product_factory, offer_factory, price_change_factory, mocker
     ):

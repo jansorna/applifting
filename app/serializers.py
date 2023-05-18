@@ -1,8 +1,6 @@
-from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from app.helpers.applifting_api import product_api
 from app.models import Product, Offer
 
 
@@ -25,13 +23,6 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = "__all__"
         read_only_field = ("id", "created_date", "updated_date")
-
-    @transaction.atomic()
-    def create(self, validated_data):
-        instance = super().create(validated_data)
-        product_api.register_product(instance)
-        product_api.sync_products_offers([instance])
-        return instance
 
 
 class DatetimePeriodSerializer(serializers.Serializer):

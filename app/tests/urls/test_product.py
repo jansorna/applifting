@@ -1,4 +1,6 @@
+import factory
 import pytest
+from django.db.models import signals
 from django.urls import reverse
 
 from app.models import Product
@@ -15,6 +17,7 @@ class TestProduct:
         {"id": "509ac030-b5c9-d4e8-1aff-e1953a4946a4", "price": 77718, "items_in_stock": 716},
     ]
 
+    @factory.django.mute_signals(signals.post_save)
     def test_list(self, api_client, product_factory):
         product_factory.create_batch(5)
         response = api_client.get(self.list_endpoint)
@@ -32,6 +35,7 @@ class TestProduct:
                     "updated_date",
                 }
 
+    @factory.django.mute_signals(signals.post_save)
     def test_detail(self, api_client, product_factory, offer_factory):
         product = product_factory()
         offer_factory(product=product)
@@ -52,7 +56,7 @@ class TestProduct:
 
     def test_post(self, api_client, mocked_service_auth, mocked_product_register, mocker):
         # mocking offer response
-        response_mock = mocker.patch("app.helpers.applifting_api.AppLiftingAPI.service_request_get")
+        response_mock = mocker.patch("app.helpers.applifting_api.AppLiftingAPI._service_request")
         response_mock.return_value = MockResponse(self.mocked_offer_response, 200)
 
         data = {
@@ -66,6 +70,7 @@ class TestProduct:
         product = Product.objects.get(id=response.json().get("id"))
         assert product.offers.count() == 3
 
+    @factory.django.mute_signals(signals.post_save)
     def test_update(self, api_client, product_factory):
         product = product_factory()
         detail_url = reverse("product-detail", args=(str(product.id),))
